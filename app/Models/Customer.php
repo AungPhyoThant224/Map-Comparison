@@ -21,7 +21,7 @@ class Customer extends Model
         return $this->belongsTo(BusinessType::class);
     }
 
-    public function customerPhoto(): HasMany{
+    public function photos(): HasMany{
         return $this->hasMany(CustomerPhoto::class);
     }
 }

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\MapController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
@@ -17,6 +18,15 @@ Route::get('/', function () {
 Route::get('/dashboard', function () {
     return Inertia::render('Dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
+
+Route::middleware(['auth', 'verified'])->group(function () {
+
+    Route::get('/map/{type}', [MapController::class, 'index'])->name('map.index');
+
+    Route::get('/map', function () {
+        return redirect()->route('map.index', ['type' => 'leaflet']);
+    });
+});
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
