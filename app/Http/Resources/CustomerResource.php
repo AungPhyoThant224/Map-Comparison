@@ -26,7 +26,7 @@ class CustomerResource extends JsonResource
             'rating' => (float) $this->rating,
             'review_count' => (int) $this->review_count,
             'category' => $this->businessType->name,
-            'marker' => asset('storage/markers/' . $this->businessType->marker_icon),
+            'marker' => asset('markers/' . $this->businessType->marker_icon),
             'photos' => CustomerPhotoResource::collection($this->whenLoaded('photos')),
         ];
     }

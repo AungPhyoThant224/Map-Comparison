@@ -16,7 +16,8 @@ class CustomerPhotoResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'url' => asset('storage/' . $this->photo_path),
+            // 'url' => asset('storage/' . $this->photo_path),
+            'url' => $this->photo_path,
             'is_primary' => (bool) $this->is_primary,
         ];
     }

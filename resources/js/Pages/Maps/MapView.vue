@@ -1,12 +1,12 @@
 <script setup>
 import { Head } from '@inertiajs/vue3';
-import { ref, computed } from 'vue';
+import { ref, defineAsyncComponent } from 'vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-// Import icons
-import {
-    Search, MapPin, Phone, Globe, ChevronLeft,
-    Star, StarHalf, Navigation, Bookmark, Share2
-} from 'lucide-vue-next';
+import CustomerList from '@/Components/Map/CustomerList.vue';
+import CustomerDetail from '@/Components/Map/CustomerDetail.vue';
+import { Search, ChevronLeft, ChevronRight } from 'lucide-vue-next';
+
+const LeafletEngine = defineAsyncComponent(() => import('@/Components/Map/LeafletEngine.vue'));
 
 const props = defineProps({
     customers: Object,
@@ -14,11 +14,11 @@ const props = defineProps({
 });
 
 const selectedCustomer = ref(null);
-const isSidebarOpen = ref(true); // Toggle for mobile view
+const isSidebarOpen = ref(true);
 
 const selectCustomer = (customer) => {
     selectedCustomer.value = customer;
-    if (window.innerWidth < 768) isSidebarOpen.value = true;
+    isSidebarOpen.value = true;
 };
 
 // Logic for star ratings
@@ -39,14 +39,25 @@ const getStars = (rating) => {
     <AuthenticatedLayout>
         <div class="relative flex h-[calc(100vh-65px)] w-full overflow-hidden bg-gray-100">
 
+            <button
+                @click="isSidebarOpen = !isSidebarOpen"
+                class="hidden transition-all duration-300 ease-in-out md:flex absolute left-0 top-1/2 -translate-y-1/2 z-[999] bg-white border shadow-md p-1 rounded-r-lg"
+                :style="{ left: isSidebarOpen ? '392px' : '0' }"
+            >
+                <ChevronLeft v-if="isSidebarOpen" />
+                <ChevronRight v-else />
+            </button>
+
             <aside
                 :class="[
                     'absolute z-[1000] transition-all duration-300 ease-in-out bg-white shadow-2xl flex flex-col',
-                    'bottom-0 w-full h-[50%] rounded-t-2xl md:top-4 md:left-4 md:w-96 md:h-[90%] md:rounded-xl',
-                    !isSidebarOpen && window.innerWidth < 768 ? 'translate-y-full' : 'translate-y-0'
+                    'bottom-0 w-full md:top-4 md:left-4 md:w-96 md:h-[90%] md:rounded-xl',
+                    isSidebarOpen ? 'h-[60%] md:translate-x-0' : 'h-12 md:-translate-x-[110%]'
                 ]"
             >
-                <div class="w-12 h-1.5 bg-gray-300 rounded-full mx-auto my-3 md:hidden"></div>
+                <div class="md:hidden flex justify-center p-2" @click="isSidebarOpen = !isSidebarOpen">
+                    <div class="w-12 h-1.5 bg-gray-300 rounded-full"></div>
+                </div>
 
                 <div class="px-4 py-4 border-b">
                     <div class="relative">
@@ -60,81 +71,30 @@ const getStars = (rating) => {
                 </div>
 
                 <div class="flex-1 overflow-y-auto custom-scrollbar">
-                    <div v-if="!selectedCustomer" class="divide-y divide-gray-100">
-                        <div
-                            v-for="customer in customers.data"
-                            :key="customer.id"
-                            @click="selectCustomer(customer)"
-                            class="p-4 hover:bg-gray-50 cursor-pointer transition flex justify-between items-start"
-                        >
-                            <div class="flex-1">
-                                <h3 class="font-bold text-gray-900">{{ customer.name }}</h3>
-                                <div class="flex items-center text-sm mb-1">
-                                    <span class="text-gray-700 font-semibold mr-1">{{ customer.rating }}</span>
-                                    <div class="flex text-yellow-500">
-                                        <template v-for="(type, index) in getStars(customer.rating)" :key="index">
-                                            <Star v-if="type === 'full'" class="w-3.5 h-3.5 fill-current" />
-                                            <StarHalf v-else-if="type === 'half'" class="w-3.5 h-3.5 fill-current" />
-                                            <Star v-else class="w-3.5 h-3.5 text-gray-300" />
-                                        </template>
-                                    </div>
-                                    <span class="text-gray-500 ml-1">({{ customer.review_count }})</span>
-                                </div>
-                                <p class="text-xs text-gray-500">{{ customer.category }}</p>
-                            </div>
-                            <img v-if="customer.photos?.[0]" :src="customer.photos[0].url" class="w-16 h-16 rounded-lg object-cover ml-3" />
-                        </div>
-                    </div>
-
-                    <div v-else class="animate-in slide-in-from-right duration-300">
-                        <div class="relative">
-                            <button
-                                @click="selectedCustomer = null"
-                                class="absolute top-4 left-4 bg-white rounded-full p-2 shadow-lg z-10 hover:bg-gray-100 transition"
-                            >
-                                <ChevronLeft class="w-5 h-5 text-gray-700" />
-                            </button>
-                            <img
-                                :src="selectedCustomer.photos?.[0]?.url || 'https://via.placeholder.com/400x200'"
-                                class="w-full h-48 md:h-56 object-cover"
-                            />
-                        </div>
-
-                        <div class="p-5">
-                            <h2 class="text-2xl font-bold text-gray-900 leading-tight">{{ selectedCustomer.name }}</h2>
-                            <p class="text-sm text-gray-500 mt-1">{{ selectedCustomer.category }}</p>
-
-                            <div class="flex justify-between gap-2 my-6 overflow-x-auto pb-2">
-                                <button class="action-btn"><Navigation class="w-4 h-4 mr-1"/> Directions</button>
-                                <button class="action-btn"><Bookmark class="w-4 h-4 mr-1"/> Save</button>
-                                <button class="action-btn"><Share2 class="w-4 h-4 mr-1"/> Share</button>
-                            </div>
-
-                            <div class="space-y-5 text-gray-700 border-t pt-5">
-                                <div class="flex items-start gap-4">
-                                    <MapPin class="w-5 h-5 text-blue-500 shrink-0" />
-                                    <p class="text-sm leading-relaxed">{{ selectedCustomer.address }}</p>
-                                </div>
-                                <div v-if="selectedCustomer.phone" class="flex items-center gap-4">
-                                    <Phone class="w-5 h-5 text-blue-500 shrink-0" />
-                                    <p class="text-sm">{{ selectedCustomer.phone }}</p>
-                                </div>
-                                <div v-if="selectedCustomer.website" class="flex items-center gap-4">
-                                    <Globe class="w-5 h-5 text-blue-500 shrink-0" />
-                                    <p class="text-sm text-blue-600 truncate">{{ selectedCustomer.website }}</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                    <CustomerList
+                        v-if="!selectedCustomer"
+                        :customers="customers.data"
+                        :getStars="getStars"
+                        @select="selectCustomer"
+                    />
+                    <CustomerDetail
+                        v-else
+                        :customer="selectedCustomer"
+                        @back="selectedCustomer = null"
+                    />
                 </div>
             </aside>
 
-            <div id="map" class="h-full w-full relative z-0">
-                <div class="absolute inset-0 flex items-center justify-center bg-gray-50">
-                    <div class="text-center animate-pulse">
-                        <div class="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-                        <p class="text-gray-500 font-medium">Loading {{ mapLibrary }} Engine...</p>
-                    </div>
+            <div id="map-wrapper" class="h-full w-full relative z-0">
+                <LeafletEngine
+                    v-if="mapLibrary === 'leaflet'"
+                    :customers="customers.data"
+                    :selectedCustomer="selectedCustomer"
+                    @select="selectCustomer"
+                />
+
+                <div v-else class="flex h-full items-center justify-center">
+                    <p class="text-gray-400 italic">Engine for {{ mapLibrary }} coming soon...</p>
                 </div>
             </div>
 
@@ -143,9 +103,6 @@ const getStars = (rating) => {
 </template>
 
 <style scoped>
-.action-btn {
-    @apply flex items-center justify-center border border-gray-200 rounded-full px-4 py-2 text-blue-600 text-xs font-semibold hover:bg-blue-50 transition min-w-[100px];
-}
 .custom-scrollbar::-webkit-scrollbar {
     width: 5px;
 }
