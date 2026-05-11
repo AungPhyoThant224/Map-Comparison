@@ -10,7 +10,8 @@ const LeafletEngine = defineAsyncComponent(() => import('@/Components/Map/Leafle
 
 const props = defineProps({
     customers: Object,
-    mapLibrary: String
+    mapLibrary: String,
+    initialBounds: Object
 });
 
 const selectedCustomer = ref(null);
@@ -91,6 +92,7 @@ const getStars = (rating) => {
                     v-if="mapLibrary === 'leaflet'"
                     :customers="customers.data"
                     :selectedCustomer="selectedCustomer"
+                    :initialBounds="initialBounds"
                     @select="selectCustomer"
                 />
 

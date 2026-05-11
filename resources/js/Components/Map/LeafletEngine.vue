@@ -7,16 +7,27 @@ import { router } from "@inertiajs/vue3";
 const props = defineProps({
     customers: Array,
     selectedCustomer: Object,
+    initialBounds: Object,
 });
 
 const emit = defineEmits(["select"]);
 const mapContainer = ref(null);
 let map = null;
 let markers = {};
+let markerLayer = null;
 
 onMounted(() => {
     // Initialize Map
-    map = L.map(mapContainer.value).setView([16.7863, 96.1604], 13);
+    map = L.map(mapContainer.value, {zoomControl: false}).setView(
+        [props.initialBounds.lat, props.initialBounds.lng],
+        13.5,
+    );
+
+    // Initialize Marker Layer
+    markerLayer = L.layerGroup().addTo(map);
+
+    // Add Markers
+    renderMarkers(props.customers);
 
     map.on("moveend", () => {
         const bounds = map.getBounds();
@@ -36,36 +47,24 @@ onMounted(() => {
         });
     });
 
+    // Zoom Control Position
+    L.control.zoom({
+        position: "topright",
+    }).addTo(map);
+
     // Add Tile Layer
     L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
         attribution: "© OpenStreetMap",
     }).addTo(map);
-
-    // Add Markers
-    props.customers.forEach((customer) => {
-        // Create custom icon using the URL from CustomerResource
-        const customIcon = L.icon({
-            iconUrl: customer.marker,
-            iconSize: [50, 50], // Size of the icon
-            iconAnchor: [25, 45], // Point of the icon which will correspond to marker's location
-            popupAnchor: [1, -34], // Point from which the popup should open relative to the iconAnchor
-            shadowUrl:
-                "https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png",
-            shadowSize: [41, 41],
-        });
-
-        const marker = L.marker([customer.lat, customer.lng], {
-            icon: customIcon,
-        })
-            .addTo(map)
-            .on("click", () => emit("select", customer));
-
-        // Add a simple popup with the name as seen in the reference UI
-        marker.bindPopup(`<b>${customer.name}</b><br>${customer.category}`);
-
-        markers[customer.id] = marker;
-    });
 });
+
+watch(
+    () => props.customers,
+    (newCustomers) => {
+        renderMarkers(newCustomers);
+    },
+    { deep: true },
+);
 
 // Watch for selection changes from the sidebar
 watch(
@@ -77,6 +76,31 @@ watch(
         }
     },
 );
+
+const renderMarkers = (customerData) => {
+    if (!markerLayer) return;
+
+    markerLayer.clearLayers(); // Remove old markers so they don't double up
+    markers = {}; // Reset our marker reference object
+
+    customerData.forEach((customer) => {
+        const customIcon = L.icon({
+            iconUrl: customer.marker,
+            iconSize: [50, 50],
+            iconAnchor: [25, 45],
+            popupAnchor: [1, -34],
+        });
+
+        const marker = L.marker([customer.lat, customer.lng], {
+            icon: customIcon,
+        }).on("click", () => emit("select", customer));
+
+        marker.bindPopup(`<b>${customer.name}</b><br>${customer.category}`);
+
+        markerLayer.addLayer(marker); // Add to group instead of map directly
+        markers[customer.id] = marker;
+    });
+};
 
 onUnmounted(() => {
     if (map) map.remove();
