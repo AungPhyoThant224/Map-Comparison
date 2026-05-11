@@ -80,6 +80,7 @@ const getStars = (rating) => {
                     <CustomerDetail
                         v-else
                         :customer="selectedCustomer"
+                        :getStars="getStars"
                         @back="selectedCustomer = null"
                     />
                 </div>

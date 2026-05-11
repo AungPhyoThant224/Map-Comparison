@@ -13,7 +13,7 @@ defineEmits(['select'])
     <div class="divide-y divide-gray-100">
         <div
             v-for="customer in customers"
-            :key="customer.id"
+            :key="customer.id + 1"
             @click="$emit('select', customer)"
             class="p-4 hover:bg-gray-50 cursor-pointer transition flex justify-between items-start"
         >
