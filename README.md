@@ -1,59 +1,97 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+## Laravel Map
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+A modern web application built with Laravel 12, Inertia.js (Vue 3), and Tailwind CSS, featuring dynamic business locations on a map with server-side spatial filtering.
 
-## About Laravel
+### Features
+- **Authentication**: Secure Login/Register flow (Redirects directly to map).
+- **Map Bound Filtering**: Automatically fetches and updates business markers based on the current map view (panning/zooming).
+- **Responsive Sidebar**: Google Maps-style sidebar with list/detail views, mobile-optimized as a bottom sheet.
+- **Dynamic Assets**: Custom markers based on business categories and image gallery.
+- **Lazy Loading**: Map engines are loaded asynchronously to optimize performance.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+### Installation & Setup 
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+1.  **Clone the Repository**
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+    ```bash
+    git clone https://github.com/AungPhyoThant224/Map-Comparison.git
+    cd Map-Comparison
+    ```
 
-## Learning Laravel
+2.  **Install PHP Dependencies**
+    
+    ```bash
+    composer install
+    ```
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+3.  **Install Frontend Dependencies**
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+    ```bash
+    npm install
+    ```
 
-## Laravel Sponsors
+4.  **Environment Configuration**
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+    - Copy the example environment file and generate your application key:
 
-### Premium Partners
+    </br>
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+    ```bash
+    cp .env.example .env
+    php artisan key:generate
+    ```
 
-## Contributing
+    *Note: Ensure your .env is configured with your local database credentials (DB_DATABASE, DB_USERNAME, DB_PASSWORD).*
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+5. **Database Migration & Seeding**
 
-## Code of Conduct
+    - This project includes a custom seeder that populates 10 businesses around the center of Yangon.
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+    </br>
 
-## Security Vulnerabilities
+    ```bash
+    php artisan migrate --seed
+    ```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+6. **Linking Storage**
 
-## License
+    - To ensure custom markers (PNG files) are accessible:
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+    </br>
+
+    ```bash
+    php artisan storage:link
+    ```
+
+### Running the Application
+
+You will need two terminal tabs open:
+
+1. Tab 1: Vite Dev Server
+
+    ```bash
+    npm run dev
+    ```
+
+2. Tab 2: Laravel Local Server
+
+    ```bash
+    php artisan serve
+    ```
+
+Visit http://127.0.0.1:8000 in your browser. You will be redirected to the Login page.
+
+### Testing the Map
+
+1. **Login**: Register a new account or use a seeded user if available.
+2. **View Markers**: Upon login, the map centers on Yangon. You should see custom icons for Restaurants, Hotels, and Cafes.
+3. **Filtering**: Pan the map away from the center. Notice the sidebar list updates dynamically via Inertia partial reloads.
+4. **Detail View**: Click a marker or a list item to see the business details, including a scrollable photo gallery and dynamic star ratings.
+5. **Responsive**: Use Chrome DevTools to toggle mobile view; the sidebar will transform into a bottom sheet.
+
+### Project Structure (Key Files)
+- ```app/Http/Controllers/MapController.php```: Handles spatial query logic.
+- ```app/Http/Resources/CustomerResource.php```: Transforms model data for the frontend.
+- ```resources/js/Pages/Maps/MapView.vue```: The main UI.
+- ```resources/js/Components/Map/LeafletEngine.vue```: Isolated Leaflet API logic.
+- ```database/seeders/CustomerSeeder.php```: Contains the test.
