@@ -39,7 +39,9 @@ onMounted(() => {
         iconSize: [25, 41],
         iconAnchor: [12, 55],
         popupAnchor: [1, -34],
-        shadowSize: [41, 41]
+        shadowSize: [41, 41],
+        cusorAction: 'none',
+        className: 'selection-pin'
     });
     selectionMarker = L.marker([0, 0], { icon: selectionIcon });
 
@@ -162,6 +164,10 @@ onUnmounted(() => {
 </template>
 
 <style scoped>
+:deep(.selection-pin){
+    pointer-events: none;
+}
+
 :deep(.leaflet-popup-content-wrapper) {
     padding: 0;
     overflow: hidden;
@@ -174,6 +180,6 @@ onUnmounted(() => {
 }
 
 :deep(.leaflet-popup-tip-container) {
-    display: none; /* Removes the little triangle at the bottom for a cleaner look */
+    display: none;
 }
 </style>

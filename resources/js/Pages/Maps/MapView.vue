@@ -5,6 +5,7 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import CustomerList from '@/Components/Map/CustomerList.vue';
 import CustomerDetail from '@/Components/Map/CustomerDetail.vue';
 import { Search, ChevronLeft, ChevronRight } from 'lucide-vue-next';
+import MapLibreEngine from '@/Components/Map/MapLibreEngine.vue';
 
 const LeafletEngine = defineAsyncComponent(() => import('@/Components/Map/LeafletEngine.vue'));
 
@@ -90,6 +91,15 @@ const getStars = (rating) => {
             <div id="map-wrapper" class="h-full w-full relative z-0">
                 <LeafletEngine
                     v-if="mapLibrary === 'leaflet'"
+                    :customers="customers.data"
+                    :selectedCustomer="selectedCustomer"
+                    :initialBounds="initialBounds"
+                    :getStars="getStars"
+                    @select="selectCustomer"
+                />
+
+                <MapLibreEngine
+                    v-if="mapLibrary === 'maplibre'"
                     :customers="customers.data"
                     :selectedCustomer="selectedCustomer"
                     :initialBounds="initialBounds"

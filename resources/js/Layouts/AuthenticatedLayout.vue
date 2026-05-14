@@ -39,6 +39,12 @@ const showingNavigationDropdown = ref(false);
                                 >
                                     Leaflet
                                 </NavLink>
+                                <NavLink
+                                    :href="route('map.index', { 'type' : 'maplibre'})"
+                                    :active="route().current('map.index', { 'type' : 'maplibre'})"
+                                >
+                                    MapLibre
+                                </NavLink>
                             </div>
                         </div>
 
