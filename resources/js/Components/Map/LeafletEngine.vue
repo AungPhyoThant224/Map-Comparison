@@ -96,7 +96,7 @@ watch(
             }
             selectionMarker.setZIndexOffset(1000);
         }
-        else if (!newCustomer && selectionMarker) {
+        else if (!newVal && selectionMarker) {
             selectionMarker.remove();
         }
     },
