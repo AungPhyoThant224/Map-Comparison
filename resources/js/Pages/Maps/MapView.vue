@@ -93,6 +93,7 @@ const getStars = (rating) => {
                     :customers="customers.data"
                     :selectedCustomer="selectedCustomer"
                     :initialBounds="initialBounds"
+                    :getStars="getStars"
                     @select="selectCustomer"
                 />
 

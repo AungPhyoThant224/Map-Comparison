@@ -32,6 +32,7 @@ class MapController extends Controller
             'initialBounds' => [
                 'lat' => $latCenter,
                 'lng' => $lngCenter,
+                'zoom' => 13.5,
             ]
         ]);
     }
