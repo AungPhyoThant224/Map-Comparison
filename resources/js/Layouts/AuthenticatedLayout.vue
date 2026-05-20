@@ -45,6 +45,12 @@ const showingNavigationDropdown = ref(false);
                                 >
                                     MapLibre
                                 </NavLink>
+                                <NavLink
+                                    :href="route('map.index', { 'type' : 'openlayers'})"
+                                    :active="route().current('map.index', { 'type' : 'openlayers'})"
+                                >
+                                    OpenLayers
+                                </NavLink>
                             </div>
                         </div>
 

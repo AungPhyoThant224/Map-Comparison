@@ -6,6 +6,7 @@ import CustomerList from '@/Components/Map/CustomerList.vue';
 import CustomerDetail from '@/Components/Map/CustomerDetail.vue';
 import { Search, ChevronLeft, ChevronRight } from 'lucide-vue-next';
 import MapLibreEngine from '@/Components/Map/MapLibreEngine.vue';
+import OpenLayersEngine from '@/Components/Map/OpenLayersEngine.vue';
 
 const LeafletEngine = defineAsyncComponent(() => import('@/Components/Map/LeafletEngine.vue'));
 
@@ -100,6 +101,15 @@ const getStars = (rating) => {
 
                 <MapLibreEngine
                     v-if="mapLibrary === 'maplibre'"
+                    :customers="customers.data"
+                    :selectedCustomer="selectedCustomer"
+                    :initialBounds="initialBounds"
+                    :getStars="getStars"
+                    @select="selectCustomer"
+                />
+
+                <OpenLayersEngine
+                    v-if="mapLibrary === 'openlayers'"
                     :customers="customers.data"
                     :selectedCustomer="selectedCustomer"
                     :initialBounds="initialBounds"
