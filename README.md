@@ -94,4 +94,6 @@ Visit http://127.0.0.1:8000 in your browser. You will be redirected to the Login
 - ```app/Http/Resources/CustomerResource.php```: Transforms model data for the frontend.
 - ```resources/js/Pages/Maps/MapView.vue```: The main UI.
 - ```resources/js/Components/Map/LeafletEngine.vue```: Isolated Leaflet API logic.
+- ```resources/js/Components/Map/MapLibreEngine.vue```: Isolated Map Libre API logic.
+- ```resources/js/Components/Map/OpenLayersEngine.vue```: Isolated Open Layers API logic.
 - ```database/seeders/CustomerSeeder.php```: Contains the test.
